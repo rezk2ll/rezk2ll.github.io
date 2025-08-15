@@ -26,9 +26,9 @@ Tech Lead with 8 years of experience, mainly as a Senior Full-Stack JavaScript E
 
 ---
 
-## **Professional Experience**
+# **Professional Experience**
 
-### **Technical Lead — LINAGORA**
+### **Technical Lead - LINAGORA**
 
 _Issy-les-Moulineaux, France • Jun 2025 – Present_
 
@@ -38,7 +38,7 @@ _Issy-les-Moulineaux, France • Jun 2025 – Present_
 
 ---
 
-### **Senior Full-Stack JavaScript Developer — LINAGORA**
+### **Senior Full-Stack JavaScript Developer - LINAGORA**
 
 _Tunis & Issy-les-Moulineaux, France • 2022 – 2025_
 
@@ -52,7 +52,7 @@ _Tunis & Issy-les-Moulineaux, France • 2022 – 2025_
 
 ---
 
-### **Full-Stack JavaScript Developer — LINAGORA**
+### **Full-Stack JavaScript Developer - LINAGORA**
 
 _Tunis, Tunisia • 2020 – 2022_
 
@@ -64,7 +64,7 @@ _Tunis, Tunisia • 2020 – 2022_
 
 ---
 
-### **Web Developer — LINAGORA**
+### **Web Developer - LINAGORA**
 
 _Tunis, Tunisia • 2018 – 2020_
 
