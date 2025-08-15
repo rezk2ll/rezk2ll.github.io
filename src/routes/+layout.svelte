@@ -23,7 +23,7 @@
 			</div>
 		</div>
 
-		<div class="page-bg relative m-auto prose pt-2 prose-invert print:p-0 px-2 lg:px0">
+		<div class="page-bg relative m-auto prose pt-2 prose-invert print:p-0 px-2 lg:px-0">
 			<div
 				class="absolute -top-40 right-4 mr-2 ml-auto h-36 w-36 origin-center -translate-x-3 -rotate-6 p-6 duration-500 hover:rotate-0 sm:h-48 sm:w-48"
 				style="animation-delay: 0s;"
