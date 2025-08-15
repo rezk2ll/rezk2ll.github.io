@@ -1,0 +1,118 @@
+# **Khaled FERJANI**
+
+**Tech Lead - Software Engineer & Senior Full-Stack JavaScript Developer**
+
+📧 k2ll33d2@gmail.com
+
+📍 Nanterre, 92000, France  
+
+💼 [GitHub](https://github.com/rezk2ll) • [Portfolio](https://rezk2ll.github.io) • [LinkedIn](https://linkedin.com/in/k2ll33d/)
+
+---
+
+## **Profile**
+
+Tech Lead with 8 years of experience, mainly as a Senior Full-Stack JavaScript Engineer. I design and implement robust, scalable architectures, mentor teams, and improve service maintainability and resilience while aligning solutions with business goals.
+
+---
+
+## **Key Skills**
+
+**Languages & Frameworks:** JavaScript, TypeScript, HTML, CSS, Svelte, SvelteKit, React, Vue.js, Remix, AngularJS, TailwindCSS  
+**Backend & APIs:** Node.js, Express, Fastify, PocketBase, SuperForms, Zod, LemonLDAP  
+**DevOps & CI/CD:** Docker, Docker Compose, GitHub Actions, GitLab CI/CD, Helm  
+**Databases:** MongoDB, PostgreSQL, MySQL, OpenLDAP, SQLite  
+**Testing & Quality:** Jest, Mocha, Chai, Vitest, Storybook, Playwright
+
+---
+
+## **Professional Experience**
+
+### **Technical Lead — LINAGORA**
+
+_Issy-les-Moulineaux, France • Jun 2025 – Present_
+
+- Supervision and technical leadership on strategic projects: Twake Workplace, Signup.
+- Mentoring and guiding developers, conducting code reviews.
+- Coordinating product, mobile, DevOps, and security teams to align with business objectives.
+
+---
+
+### **Senior Full-Stack JavaScript Developer — LINAGORA**
+
+_Tunis & Issy-les-Moulineaux, France • 2022 – 2025_
+
+- Continued and expanded responsibilities on Twake Workplace, Signup, and Twake On Matrix.
+- Collaborated with local and international teams; participated in product demos and documentation.
+- Ensured backend and frontend service stability, performance, and security.
+- Designed and developed critical APIs.
+- Set up and maintained backend services.
+- Refactored and created interfaces for signup platforms and LDAP management.
+- Implemented CI/CD and deployments using Docker, GitHub Actions, and Helm.
+
+---
+
+### **Full-Stack JavaScript Developer — LINAGORA**
+
+_Tunis, Tunisia • 2020 – 2022_
+
+- Developed the Twake public platform.
+- Created CI/CD pipelines.
+- Built the Matrix invitation platform.
+- Developed and integrated APIs.
+- Maintained OnlyOffice connectors and provided cross-team support.
+
+---
+
+### **Web Developer — LINAGORA**
+
+_Tunis, Tunisia • 2018 – 2020_
+
+- Developed and maintained the ANCE Managed PKI platform.
+- Delivered client demos and provided ongoing support.
+
+---
+
+## **Open Source Projects**
+
+- **[Vetixa](https://github.com/rezk2ll/vetixa)** — Open-source veterinary clinic management system in production  
+  _Tech:_ SvelteKit, PocketBase, TailwindCSS, SuperForms, Zod
+
+- **[svelte-num-otp](https://github.com/rezk2ll/svelte-num-otp)** — Open-source OTP component for Svelte projects  
+  _Tech:_ Svelte, TailwindCSS
+
+- **[Remix HackerNews Clone](https://github.com/rezk2ll/remix-hn-clone)** — Improved version of HackerNews using Remix  
+  _Tech:_ React, Remix, TailwindCSS
+
+- **[SvelteKit Forecast](https://github.com/rezk2ll/sveltekit-forecast)** — Progressive Web App showing weather info based on geolocation  
+  _Tech:_ SvelteKit, TailwindCSS, DaisyUI
+
+**Contributions:** react-international-phone, validator.js
+
+---
+
+## **Education**
+
+**INSAT — National Institute of Applied Science and Technology**  
+Applied Bachelor’s Degree in Computer Science & Software Engineering (2014 – 2017)
+
+---
+
+## **Certificates & Awards**
+
+- MTA: Software Development Fundamentals — Microsoft, 2017
+- Winner, Carthage Cyber Arena CTF — Dec 2017
+
+---
+
+## **Languages**
+
+- French: Advanced
+- English: Fluent
+- Arabic: Native
+
+---
+
+## **Soft Skills**
+
+Technical leadership • Cross-team communication • Problem-solving • Result-oriented • Adaptability & continuous learning • Mentoring & training

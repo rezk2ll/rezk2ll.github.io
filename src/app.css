@@ -1,0 +1,19 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+html, .page-bg {
+  --tw-bg-opacity: 1;
+  --tw-text-opacity: 1;
+  background-color: rgb(24 24 27 / var(--tw-bg-opacity, 1));
+  color: rgb(212 212 216 / var(--tw-text-opacity, 1));
+}
+
+.banner-overlday {
+  align-items: flex-end;
+  display: flex;
+}
+
+.banner-shadow {
+  background: linear-gradient(transparent, #18181b80 40%, #18181b);
+  width: 100%;
+}
