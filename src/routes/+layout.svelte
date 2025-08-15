@@ -6,6 +6,7 @@
 
 <svelte:head>
 	<link rel="icon" href="favicon.ico" />
+  <title>Khaled FERJANI</title>
 </svelte:head>
 <div class="page-bg flex h-dvh w-full flex-col justify-between">
 	<main class="flex-1 pb-40 print:pb-0">
