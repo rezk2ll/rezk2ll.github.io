@@ -32,7 +32,7 @@
 					src="https://avatars.githubusercontent.com/u/6764881?v=4"
 					width="160"
 					height="160"
-					alt="khaled"
+					alt="khaled's portrait"
 					class="touch-manipulation rounded-md shadow-sm shadow-gray-900/50 transition-opacity"
 				/>
 			</div>
