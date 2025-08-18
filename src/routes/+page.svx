@@ -1,12 +1,12 @@
 # **Khaled FERJANI**
 
-**Tech Lead - Software Engineer & Senior Full-Stack JavaScript Developer**
+**Tech Lead - Senior Full-Stack JavaScript Developer**
 
 📧 k2ll33d2@gmail.com
 
 📍 Nanterre, 92000, France  
 
-💼 [GitHub](https://github.com/rezk2ll) • [Portfolio](https://rezk2ll.github.io) • [LinkedIn](https://linkedin.com/in/k2ll33d/)
+ 🔗 [GitHub](https://github.com/rezk2ll) • [LinkedIn](https://linkedin.com/in/k2ll33d/)
 
 ---
 
@@ -59,14 +59,17 @@ _Tunis, Tunisia • 2020 – 2022_
 - Developed the Twake public platform.
 - Created CI/CD pipelines.
 - Built the Matrix invitation platform.
+- Worked on developing the [OpenPaas](https://open-paas.org) project.
+- Contributed to development of the [SmartSla](https://smartsla.org) project.
 - Developed and integrated APIs.
+- Built user interfaces using AngularJS, Vue, and React.
 - Maintained OnlyOffice connectors and provided cross-team support.
 
 ---
 
 ### **Web Developer - LINAGORA**
 
-_Tunis, Tunisia • 2018 – 2020_
+_Tunis, Tunisia • 2017 – 2020_
 
 - Developed and maintained the ANCE Managed PKI platform.
 - Delivered client demos and provided ongoing support.
@@ -75,7 +78,7 @@ _Tunis, Tunisia • 2018 – 2020_
 
 ## **Open Source Projects**
 
-- **[Vetixa](https://github.com/rezk2ll/vetixa)** — Open-source veterinary clinic management system in production  
+- **[Vetixa](https://github.com/rezk2ll/vetixa)** — Open-source veterinary clinic management system in production
   _Tech:_ SvelteKit, PocketBase, TailwindCSS, SuperForms, Zod
 
 - **[svelte-num-otp](https://github.com/rezk2ll/svelte-num-otp)** — Open-source OTP component for Svelte projects  
