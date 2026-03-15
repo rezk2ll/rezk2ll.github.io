@@ -1,42 +1,121 @@
 <script lang="ts">
 	import '../app.css';
+	import { onMount } from 'svelte';
 
 	let { children } = $props();
+
+	let canvas: HTMLCanvasElement;
+	let spotlight: HTMLDivElement;
+	let mouseX = $state(0);
+	let mouseY = $state(0);
+
+	onMount(() => {
+		const ctx = canvas.getContext('2d')!;
+		let w = (canvas.width = window.innerWidth);
+		let h = (canvas.height = window.innerHeight);
+		mouseX = w / 2;
+		mouseY = h / 2;
+
+		const particles = Array.from({ length: 80 }, () => ({
+			x: Math.random() * w,
+			y: Math.random() * h,
+			size: Math.random() * 2.5 + 0.8,
+			speedX: (Math.random() - 0.5) * 0.3,
+			speedY: (Math.random() - 0.5) * 0.3,
+			baseOpacity: Math.random() * 0.5 + 0.25,
+			phase: Math.random() * Math.PI * 2,
+			twinkleSpeed: Math.random() * 0.02 + 0.008
+		}));
+
+		let tick = 0;
+
+		function handleMouseMove(e: MouseEvent) {
+			mouseX = e.clientX;
+			mouseY = e.clientY;
+		}
+
+		function handleResize() {
+			w = canvas.width = window.innerWidth;
+			h = canvas.height = window.innerHeight;
+		}
+
+		window.addEventListener('mousemove', handleMouseMove, { passive: true });
+		window.addEventListener('resize', handleResize, { passive: true });
+
+		let frame: number;
+
+		function animate() {
+			ctx.clearRect(0, 0, w, h);
+			tick++;
+
+			for (const p of particles) {
+				const dx = mouseX - p.x;
+				const dy = mouseY - p.y;
+				const dist = Math.sqrt(dx * dx + dy * dy);
+
+				if (dist < 200) {
+					const force = (200 - dist) / 200;
+					p.x -= dx * force * 0.004;
+					p.y -= dy * force * 0.004;
+				}
+
+				p.x += p.speedX;
+				p.y += p.speedY;
+
+				if (p.x < -10) p.x = w + 10;
+				if (p.x > w + 10) p.x = -10;
+				if (p.y < -10) p.y = h + 10;
+				if (p.y > h + 10) p.y = -10;
+
+				const twinkle = Math.sin(tick * p.twinkleSpeed + p.phase) * 0.5 + 0.5;
+				const opacity = p.baseOpacity * (0.5 + twinkle * 0.5);
+
+				ctx.beginPath();
+				ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+				ctx.fillStyle = `rgba(180, 190, 220, ${opacity})`;
+				ctx.fill();
+
+				if (p.size > 1.5 && twinkle > 0.6) {
+					ctx.beginPath();
+					ctx.arc(p.x, p.y, p.size * 3.5, 0, Math.PI * 2);
+					ctx.fillStyle = `rgba(180, 190, 220, ${opacity * 0.12})`;
+					ctx.fill();
+				}
+			}
+
+			frame = requestAnimationFrame(animate);
+		}
+
+		animate();
+
+		return () => {
+			cancelAnimationFrame(frame);
+			window.removeEventListener('mousemove', handleMouseMove);
+			window.removeEventListener('resize', handleResize);
+		};
+	});
 </script>
 
 <svelte:head>
 	<link rel="icon" href="favicon.ico" />
-  <title>Khaled FERJANI</title>
 </svelte:head>
-<div class="page-bg flex h-dvh w-full flex-col justify-between">
-	<main class="flex-1 pb-40 print:pb-0">
-		<div class="fixed left-1/2 z-0 prose min-h-60 w-full -translate-x-1/2">
-			<img src="/bg.webp" alt="Map" class="z-[-1] h-[250px] w-full object-cover opacity-90" />
-		</div>
-		<div class="banner-overlay min-h-60 px-4">
-			<div class="banner-shadow min-h-28">
-				<div class="mx-auto w-full max-w-3xl px-4 pt-4">
-					<div class="overflow-hidden pt-40">
-						<div class="px-12 text-2xl leading-tight font-light text-white">Hello</div>
-					</div>
-				</div>
-			</div>
-		</div>
 
-		<div class="page-bg relative m-auto prose pt-2 prose-invert print:p-0 px-2 lg:px-0">
-			<div
-				class="absolute -top-40 right-4 mr-2 ml-auto h-36 w-36 origin-center -translate-x-3 -rotate-0 p-6 duration-500 hover:-rotate-6 sm:h-48 sm:w-48"
-				style="animation-delay: 0s;"
-			>
-				<img
-					src="https://avatars.githubusercontent.com/u/6764881?v=4"
-					width="160"
-					height="160"
-					alt="khaled's portrait"
-					class="touch-manipulation rounded-md shadow-sm shadow-gray-900/50 transition-opacity"
-				/>
-			</div>
-			{@render children?.()}
-		</div>
-	</main>
-</div>
+{@render children?.()}
+
+<!-- Floating particles -->
+<canvas
+	bind:this={canvas}
+	class="no-print pointer-events-none fixed inset-0 z-10"
+	aria-hidden="true"
+></canvas>
+
+<!-- Mouse-following warm spotlight -->
+<div
+	bind:this={spotlight}
+	class="no-print pointer-events-none fixed inset-0 z-0 transition-opacity duration-300"
+	style="background: radial-gradient(700px circle at {mouseX}px {mouseY}px, rgba(80, 100, 160, 0.08), transparent 70%);"
+	aria-hidden="true"
+></div>
+
+<!-- Grain texture -->
+<div class="no-print grain-overlay" aria-hidden="true"></div>
