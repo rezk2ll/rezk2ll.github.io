@@ -1,7 +1,8 @@
 <script lang="ts">
 	const technologies = [
 		'TypeScript', 'JavaScript', 'Svelte/SvelteKit', 'Node.js', 'React', 'Vue.js',
-		'Tailwind CSS', 'Docker', 'Kubernetes', 'Helm', 'GitHub Actions', 'Linux', 'Git'
+		'Tailwind CSS', 'PostgreSQL', 'RabbitMQ', 'LDAP', 'Docker', 'Kubernetes', 'Helm',
+		'GitHub Actions', 'Linux', 'Git'
 	];
 
 	const projects = [
@@ -37,14 +38,14 @@
 			company: 'LINAGORA',
 			location: 'Issy-les-Moulineaux, France',
 			period: 'Jun 2025 – Present',
-			description: 'Tech Lead on Twake Workplace — hands-on across the full stack: feature development, ADRs, LDAP identity, admin tooling, security hardening, Helm charts, and Kubernetes deployments. Mentoring developers and coordinating delivery across product, DevOps, and security teams.'
+			description: 'Own the registration and authentication platform end-to-end: SSO/OIDC, 2FA, client-side PBKDF2 encryption, account lifecycle. Designed event-driven RabbitMQ architecture across services and published the shared @linagora/rabbitmq-client library. Built a platform metrics dashboard and documentation site from scratch. Led security hardening across the codebase: LDAP injection prevention, CrowdSec anti-fraud, session security. 440+ code reviews across 17 repositories.'
 		},
 		{
 			title: 'Senior Full-Stack Developer',
 			company: 'LINAGORA',
 			location: 'Tunis & Issy-les-Moulineaux, France',
 			period: '2022 – 2025',
-			description: 'Expanded platform services for Twake Workplace, Signup, and Twake On Matrix. Designed critical APIs, ensured service stability and security, and owned CI/CD infrastructure with Docker, GitHub Actions, and Helm.'
+			description: 'Built and expanded platform services for Twake Workplace, Signup, and Twake On Matrix. Contributed major features to Cozy Drive and upstream Cozy ecosystem. Owned CI/CD infrastructure with Docker, GitHub Actions, and Helm.'
 		},
 		{
 			title: 'Full-Stack Developer',
@@ -109,9 +110,9 @@
 	<section class="mb-8">
 		<h2 class="mb-3 text-sm font-semibold uppercase tracking-wider text-zinc-400 print:text-zinc-500">Summary</h2>
 		<p class="text-sm leading-relaxed text-zinc-300 print:text-zinc-700">
-			Technical Lead with 9+ years of experience building collaboration platforms, developer tools, and open-source software.
-			Currently leading Twake Workplace at LINAGORA — owning architecture, full-stack development, security hardening,
-			and Kubernetes deployments. Strong expertise in TypeScript, SvelteKit, Node.js, and DevOps tooling.
+			Technical Lead with 9+ years of experience building identity, collaboration, and developer platforms.
+			Currently leading Twake Workplace at LINAGORA -- owning the authentication service, designing cross-service
+			event-driven architecture, and driving security hardening and platform observability across 15 repositories.
 		</p>
 	</section>
 

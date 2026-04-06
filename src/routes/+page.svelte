@@ -61,6 +61,8 @@
 		{ name: 'React', slug: 'react', color: '61DAFB' },
 		{ name: 'Vue.js', slug: 'vuedotjs', color: '4FC08D' },
 		{ name: 'Tailwind CSS', slug: 'tailwindcss', color: '06B6D4' },
+		{ name: 'PostgreSQL', slug: 'postgresql', color: '4169E1' },
+		{ name: 'RabbitMQ', slug: 'rabbitmq', color: 'FF6600' },
 		{ name: 'Docker', slug: 'docker', color: '2496ED' },
 		{ name: 'Kubernetes', slug: 'kubernetes', color: '326CE5' },
 		{ name: 'GitHub Actions', slug: 'githubactions', color: '2088FF' },
@@ -104,7 +106,7 @@
 			location: 'Issy-les-Moulineaux, France',
 			period: 'Jun 2025 – Present',
 			description:
-				'Tech Lead on Twake Workplace — hands-on across the full stack: feature development, ADRs, LDAP identity, admin tooling, security hardening, Helm charts, and Kubernetes deployments. Mentoring developers and coordinating delivery across product, DevOps, and security teams.'
+				'Own the registration and authentication platform end-to-end: SSO/OIDC, 2FA, client-side PBKDF2 encryption, account lifecycle. Designed event-driven RabbitMQ architecture across services and published the shared @linagora/rabbitmq-client library. Built a platform metrics dashboard and documentation site from scratch. Led security hardening across the codebase: LDAP injection prevention, CrowdSec anti-fraud, session security. 440+ code reviews across 17 repositories.'
 		},
 		{
 			title: 'Senior Full-Stack Developer',
@@ -112,7 +114,7 @@
 			location: 'Tunis & Issy-les-Moulineaux, France',
 			period: '2022 – 2025',
 			description:
-				'Expanded platform services for Twake Workplace, Signup, and Twake On Matrix. Designed critical APIs, ensured service stability and security, and owned CI/CD infrastructure with Docker, GitHub Actions, and Helm.'
+				'Built and expanded platform services for Twake Workplace, Signup, and Twake On Matrix. Contributed major features to Cozy Drive and upstream Cozy ecosystem. Owned CI/CD infrastructure with Docker, GitHub Actions, and Helm.'
 		},
 		{
 			title: 'Full-Stack Developer',
@@ -189,9 +191,9 @@
 
 			<!-- Bio -->
 			<p class="mt-16 text-sm leading-relaxed text-zinc-400">
-				I build collaboration platforms and developer tools. Tech Lead on Twake Workplace —
-				involved in everything from architecture and development to deployment, Helm charts, and
-				Kubernetes. I also ship open-source projects on the side.
+				I build identity, collaboration, and developer platforms. Tech Lead on Twake Workplace --
+				owning the authentication service, designing cross-service event-driven architecture,
+				and driving security hardening and platform observability. I also ship open-source projects on the side.
 			</p>
 
 			<!-- Links -->
