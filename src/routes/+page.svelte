@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { siGithub, siGmail } from 'simple-icons';
+	import Seo from '$lib/Seo.svelte';
 	import {
 		ai,
 		alsoContributed,
@@ -75,9 +76,36 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Khaled Ferjani</title>
-</svelte:head>
+<Seo
+	title="Khaled Ferjani · Technical Lead, identity and event-driven platforms"
+	description="Khaled Ferjani is a Technical Lead in France building open-source collaboration software: sign-in and identity (SSO, OIDC, 2FA), RabbitMQ messaging, Kubernetes. Creator of Dojo and Claude Code guardrails."
+	path="/"
+	jsonLd={{
+		'@context': 'https://schema.org',
+		'@type': 'ProfilePage',
+		url: 'https://ferjani.dev/',
+		mainEntity: {
+			'@type': 'Person',
+			name: 'Khaled Ferjani',
+			url: 'https://ferjani.dev/',
+			image: 'https://ferjani.dev/avatar.webp',
+			jobTitle: 'Technical Lead',
+			worksFor: { '@type': 'Organization', name: 'LINAGORA', url: 'https://linagora.com' },
+			address: { '@type': 'PostalAddress', addressCountry: 'FR' },
+			sameAs: ['https://github.com/rezk2ll', 'https://linkedin.com/in/k2ll33d/'],
+			knowsAbout: [
+				'Identity and access management',
+				'OpenID Connect',
+				'Event-driven architecture',
+				'RabbitMQ',
+				'Kubernetes',
+				'TypeScript',
+				'Svelte',
+				'Claude Code'
+			]
+		}
+	}}
+/>
 
 <div class="mx-auto max-w-screen-2xl px-6 py-12 md:px-10 md:py-20">
 	<div class="flex flex-col gap-12 lg:flex-row lg:gap-16">

@@ -9,8 +9,9 @@ const config = {
 	preprocess: [vitePreprocess(), mdsvex()],
 	kit: {
 		adapter: adapter({
-			fallback: '200.html'
-		})
+			fallback: '404.html'
+		}),
+		prerender: { entries: ['*', '/sitemap.xml'] }
 	},
 	extensions: ['.svelte', '.svx']
 };

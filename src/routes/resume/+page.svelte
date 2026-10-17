@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { alsoContributed, bio, experience, openSource, projects, technologies } from '$lib/data';
+	import Seo from '$lib/Seo.svelte';
 
 	const cvProjects = [...openSource, ...projects].filter((p) =>
 		['ldap-rest', 'twake-sessions-service', 'Dojo', 'Vetixa'].includes(p.name)
@@ -10,9 +11,11 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Khaled Ferjani, Resume</title>
-</svelte:head>
+<Seo
+	title="Khaled Ferjani · Resume"
+	description="Resume of Khaled Ferjani, Technical Lead: 9 years building open-source collaboration software, identity and SSO, event-driven services and Kubernetes platforms."
+	path="/resume"
+/>
 
 <!-- Download button (hidden in print) -->
 <div class="no-print fixed top-6 right-6 z-50 flex items-center gap-3">
