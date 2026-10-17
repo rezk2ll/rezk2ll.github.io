@@ -51,6 +51,7 @@
 						!visibleSections.includes(entry.target.id)
 					) {
 						visibleSections = [...visibleSections, entry.target.id];
+						window.umami?.track('section', { name: entry.target.id });
 					}
 				}
 			},
@@ -168,6 +169,8 @@
 					rel="noopener noreferrer"
 					class="opacity-50 transition-opacity hover:opacity-100"
 					aria-label="GitHub"
+					data-umami-event="contact"
+					data-umami-event-channel="github"
 				>
 					<svg class="h-5 w-5" viewBox="0 0 24 24" fill="#e4e4e7"><path d={siGithub.path} /></svg>
 				</a>
@@ -177,6 +180,8 @@
 					rel="noopener noreferrer"
 					class="opacity-50 transition-opacity hover:opacity-100"
 					aria-label="LinkedIn"
+					data-umami-event="contact"
+					data-umami-event-channel="linkedin"
 				>
 					<svg class="h-5 w-5" viewBox="0 0 24 24" fill="#e4e4e7"
 						><path
@@ -188,6 +193,8 @@
 					href="mailto:k2ll33d2@gmail.com"
 					class="opacity-50 transition-opacity hover:opacity-100"
 					aria-label="Email"
+					data-umami-event="contact"
+					data-umami-event-channel="email"
 				>
 					<svg class="h-5 w-5" viewBox="0 0 24 24" fill="#e4e4e7"><path d={siGmail.path} /></svg>
 				</a>
@@ -196,6 +203,7 @@
 			<!-- Resume link -->
 			<a
 				href="/resume"
+				data-umami-event="resume"
 				class="mt-5 inline-flex items-center gap-2 rounded-lg border border-zinc-800/80 bg-zinc-900/40 px-4 py-2 text-sm text-zinc-400 transition-colors hover:border-zinc-700 hover:text-white"
 			>
 				<svg
@@ -217,6 +225,7 @@
 			<div class="mt-4 grid grid-cols-2 gap-2">
 				<a
 					href="https://ferjani.dev/dojo/"
+					data-umami-event="open-dojo"
 					class="group rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-2.5 transition-colors hover:border-emerald-400/40 hover:bg-emerald-500/10"
 				>
 					<span class="flex items-center gap-1 text-sm font-medium text-emerald-300"
@@ -228,6 +237,8 @@
 				</a>
 				<a
 					href="https://ferjani.dev/skills/"
+					data-umami-event="open-skills"
+					data-umami-event-from="sidebar"
 					class="group rounded-lg border border-orange-500/20 bg-orange-500/5 px-3 py-2.5 transition-colors hover:border-orange-400/40 hover:bg-orange-500/10"
 				>
 					<span class="flex items-center gap-1 text-sm font-medium text-orange-300"
@@ -318,6 +329,8 @@
 					{#each list as project (project.name)}
 						<a
 							href={project.url}
+							data-umami-event="project"
+							data-umami-event-name={project.name}
 							target="_blank"
 							rel="noopener noreferrer"
 							class="group rounded-xl border border-zinc-800/60 bg-zinc-900/30 p-5 transition-all hover:border-zinc-700 hover:bg-zinc-900/50"
@@ -371,7 +384,9 @@
 					{/each}
 				</ul>
 				<a
-					href="https://ferjani.dev/skills"
+					href="https://ferjani.dev/skills/"
+					data-umami-event="open-skills"
+					data-umami-event-from="ai-section"
 					class="mt-5 inline-flex items-center gap-1.5 rounded-lg border border-zinc-800 px-3 py-1.5 text-sm text-zinc-300 transition-colors hover:border-zinc-700 hover:text-white"
 					>Install my skills and guardrails <span aria-hidden="true">↗</span></a
 				>
@@ -387,6 +402,8 @@
 			rel="noopener noreferrer"
 			class="opacity-40 transition-opacity hover:opacity-80"
 			aria-label="GitHub"
+			data-umami-event="contact"
+			data-umami-event-channel="github"
 		>
 			<svg class="h-4 w-4" viewBox="0 0 24 24" fill="#e4e4e7"><path d={siGithub.path} /></svg>
 		</a>
@@ -396,6 +413,8 @@
 			rel="noopener noreferrer"
 			class="opacity-40 transition-opacity hover:opacity-80"
 			aria-label="LinkedIn"
+			data-umami-event="contact"
+			data-umami-event-channel="linkedin"
 		>
 			<svg class="h-4 w-4" viewBox="0 0 24 24" fill="#e4e4e7"
 				><path
@@ -407,6 +426,8 @@
 			href="mailto:k2ll33d2@gmail.com"
 			class="opacity-40 transition-opacity hover:opacity-80"
 			aria-label="Email"
+			data-umami-event="contact"
+			data-umami-event-channel="email"
 		>
 			<svg class="h-4 w-4" viewBox="0 0 24 24" fill="#e4e4e7"><path d={siGmail.path} /></svg>
 		</a>
