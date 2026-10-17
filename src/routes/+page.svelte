@@ -1,5 +1,16 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { siGithub, siGmail } from 'simple-icons';
+	import {
+		ai,
+		alsoContributed,
+		bio,
+		experience,
+		openSource,
+		projects,
+		technologies,
+		type Project
+	} from '$lib/data';
 
 	let time = $state('');
 	let timeIcon = $state('');
@@ -33,7 +44,11 @@
 		const observer = new IntersectionObserver(
 			(entries) => {
 				for (const entry of entries) {
-					if (entry.isIntersecting && entry.target.id && !visibleSections.includes(entry.target.id)) {
+					if (
+						entry.isIntersecting &&
+						entry.target.id &&
+						!visibleSections.includes(entry.target.id)
+					) {
 						visibleSections = [...visibleSections, entry.target.id];
 					}
 				}
@@ -49,90 +64,15 @@
 		};
 	});
 
+	// Brand colors too dark for the near-black background fall back to the text color.
+	function iconFill(hex: string) {
+		const [r, g, b] = [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16));
+		return 0.299 * r + 0.587 * g + 0.114 * b < 60 ? '#a1a1aa' : `#${hex}`;
+	}
+
 	function reveal(id: string) {
 		return visibleSections.includes(id) ? 'section-visible' : 'section-hidden';
 	}
-
-	const technologies = [
-		{ name: 'TypeScript', slug: 'typescript', color: '3178C6' },
-		{ name: 'JavaScript', slug: 'javascript', color: 'F7DF1E' },
-		{ name: 'Svelte', slug: 'svelte', color: 'FF3E00' },
-		{ name: 'Node.js', slug: 'nodedotjs', color: '5FA04E' },
-		{ name: 'React', slug: 'react', color: '61DAFB' },
-		{ name: 'Vue.js', slug: 'vuedotjs', color: '4FC08D' },
-		{ name: 'Tailwind CSS', slug: 'tailwindcss', color: '06B6D4' },
-		{ name: 'PostgreSQL', slug: 'postgresql', color: '4169E1' },
-		{ name: 'RabbitMQ', slug: 'rabbitmq', color: 'FF6600' },
-		{ name: 'Docker', slug: 'docker', color: '2496ED' },
-		{ name: 'Kubernetes', slug: 'kubernetes', color: '326CE5' },
-		{ name: 'GitHub Actions', slug: 'githubactions', color: '2088FF' },
-		{ name: 'Linux', slug: 'linux', color: 'FCC624' },
-		{ name: 'Helm', slug: 'helm', color: '0F1689' },
-		{ name: 'Git', slug: 'git', color: 'F05032' }
-	];
-
-	const projects = [
-		{
-			name: 'Vetixa',
-			description: 'Open-source veterinary clinic management system, actively used in production',
-			tech: ['SvelteKit', 'PocketBase', 'TailwindCSS', 'Zod'],
-			url: 'https://github.com/rezk2ll/vetixa'
-		},
-		{
-			name: 'SplitShare',
-			description:
-				'Workout split sharing platform with social features, offline sync, and clean architecture',
-			tech: ['SvelteKit', 'Better Auth', 'PWA'],
-			url: 'https://github.com/split-share/splitshare'
-		},
-		{
-			name: 'svelte-num-otp',
-			description: 'Reusable OTP input component for Svelte applications',
-			tech: ['Svelte', 'TailwindCSS'],
-			url: 'https://github.com/rezk2ll/svelte-num-otp'
-		},
-		{
-			name: 'SvelteKit Forecast',
-			description: 'Progressive Web App with geolocation-based weather forecasts',
-			tech: ['SvelteKit', 'TailwindCSS', 'DaisyUI'],
-			url: 'https://github.com/rezk2ll/sveltekit-forecast'
-		}
-	];
-
-	const experience = [
-		{
-			title: 'Technical Lead',
-			company: 'LINAGORA',
-			location: 'Issy-les-Moulineaux, France',
-			period: 'Jun 2025 – Present',
-			description:
-				'Own the registration and authentication platform end-to-end: SSO/OIDC, 2FA, client-side PBKDF2 encryption, account lifecycle. Designed event-driven RabbitMQ architecture across services and published the shared @linagora/rabbitmq-client library. Built a platform metrics dashboard and documentation site from scratch. Led security hardening across the codebase: LDAP injection prevention, CrowdSec anti-fraud, session security. 440+ code reviews across 17 repositories.'
-		},
-		{
-			title: 'Senior Full-Stack Developer',
-			company: 'LINAGORA',
-			location: 'Tunis & Issy-les-Moulineaux, France',
-			period: '2022 – 2025',
-			description:
-				'Built and expanded platform services for Twake Workplace, Signup, and Twake On Matrix. Contributed major features to Cozy Drive and upstream Cozy ecosystem. Owned CI/CD infrastructure with Docker, GitHub Actions, and Helm.'
-		},
-		{
-			title: 'Full-Stack Developer',
-			company: 'LINAGORA',
-			location: 'Tunis, Tunisia',
-			period: '2020 – 2022',
-			description:
-				'Built the Twake platform, Matrix invitation system, and contributed to OpenPaas and SmartSla. Developed frontends with AngularJS, Vue, and React. Created CI/CD pipelines and maintained cross-team integrations.'
-		},
-		{
-			title: 'Web Developer',
-			company: 'LINAGORA',
-			location: 'Tunis, Tunisia',
-			period: '2017 – 2020',
-			description:
-				'Developed and maintained the ANCE Managed PKI platform. Delivered client demos and provided ongoing support.'
-		}
-	];
 </script>
 
 <svelte:head>
@@ -176,7 +116,7 @@
 				<!-- Identity — overlaps map bottom -->
 				<div class="absolute -bottom-12 left-4 flex items-end gap-4">
 					<img
-						src="https://avatars.githubusercontent.com/u/6764881?v=4"
+						src="/avatar.webp"
 						width="96"
 						height="96"
 						alt="Khaled Ferjani"
@@ -190,11 +130,7 @@
 			</div>
 
 			<!-- Bio -->
-			<p class="mt-16 text-sm leading-relaxed text-zinc-400">
-				I build identity, collaboration, and developer platforms. Tech Lead on Twake Workplace --
-				owning the authentication service, designing cross-service event-driven architecture,
-				and driving security hardening and platform observability. I also ship open-source projects on the side.
-			</p>
+			<p class="mt-16 text-sm leading-relaxed text-zinc-400">{bio}</p>
 
 			<!-- Links -->
 			<nav class="mt-5 flex items-center gap-4">
@@ -205,7 +141,7 @@
 					class="opacity-50 transition-opacity hover:opacity-100"
 					aria-label="GitHub"
 				>
-					<img src="https://cdn.simpleicons.org/github/e4e4e7" alt="GitHub" class="h-5 w-5" />
+					<svg class="h-5 w-5" viewBox="0 0 24 24" fill="#e4e4e7"><path d={siGithub.path} /></svg>
 				</a>
 				<a
 					href="https://linkedin.com/in/k2ll33d/"
@@ -214,14 +150,18 @@
 					class="opacity-50 transition-opacity hover:opacity-100"
 					aria-label="LinkedIn"
 				>
-					<svg class="h-5 w-5" viewBox="0 0 24 24" fill="#e4e4e7"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+					<svg class="h-5 w-5" viewBox="0 0 24 24" fill="#e4e4e7"
+						><path
+							d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"
+						/></svg
+					>
 				</a>
 				<a
 					href="mailto:k2ll33d2@gmail.com"
 					class="opacity-50 transition-opacity hover:opacity-100"
 					aria-label="Email"
 				>
-					<img src="https://cdn.simpleicons.org/gmail/e4e4e7" alt="Email" class="h-5 w-5" />
+					<svg class="h-5 w-5" viewBox="0 0 24 24" fill="#e4e4e7"><path d={siGmail.path} /></svg>
 				</a>
 			</nav>
 
@@ -230,7 +170,15 @@
 				href="/resume"
 				class="mt-5 inline-flex items-center gap-2 rounded-lg border border-zinc-800/80 bg-zinc-900/40 px-4 py-2 text-sm text-zinc-400 transition-colors hover:border-zinc-700 hover:text-white"
 			>
-				<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<svg
+					class="h-4 w-4"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
 					<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
 					<polyline points="7 10 12 15 17 10" />
 					<line x1="12" y1="15" x2="12" y2="3" />
@@ -240,22 +188,20 @@
 
 			<!-- Technologies -->
 			<div class="mt-8">
-				<h2 class="mb-4 text-xs font-semibold uppercase tracking-wider text-zinc-600">
+				<h2 class="mb-4 text-xs font-semibold tracking-wider text-zinc-600 uppercase">
 					Technologies
 				</h2>
 				<div class="flex flex-wrap gap-2">
-					{#each technologies as tech}
+					{#each technologies as tech (tech.name)}
 						<div
 							class="flex items-center gap-1.5 rounded-full border border-zinc-800/80 bg-zinc-900/40 px-3 py-1.5 text-xs text-zinc-400 transition-colors hover:border-zinc-700 hover:text-zinc-200"
 						>
-							<img
-								src="https://cdn.simpleicons.org/{tech.slug}/{tech.color}"
-								alt={tech.name}
-								width="14"
-								height="14"
+							<svg
 								class="h-3.5 w-3.5"
-								loading="lazy"
-							/>
+								viewBox="0 0 24 24"
+								fill={iconFill(tech.icon.hex)}
+								aria-hidden="true"><path d={tech.icon.path} /></svg
+							>
 							<span>{tech.name}</span>
 						</div>
 					{/each}
@@ -264,11 +210,11 @@
 
 			<!-- Education (compact in sidebar) -->
 			<div class="mt-8">
-				<h2 class="mb-4 text-xs font-semibold uppercase tracking-wider text-zinc-600">
-					Education
-				</h2>
+				<h2 class="mb-4 text-xs font-semibold tracking-wider text-zinc-600 uppercase">Education</h2>
 				<div>
-					<p class="text-sm font-medium text-zinc-300">BSc Computer Science & Software Engineering</p>
+					<p class="text-sm font-medium text-zinc-300">
+						BSc Computer Science & Software Engineering
+					</p>
 					<p class="mt-0.5 text-xs text-zinc-600">INSAT · 2014 – 2017</p>
 				</div>
 				<div class="mt-4 space-y-2 text-xs text-zinc-500">
@@ -278,21 +224,19 @@
 			</div>
 
 			<!-- Languages -->
-			<div class="mt-6 text-xs text-zinc-600">
-				Arabic · French · English
-			</div>
+			<div class="mt-6 text-xs text-zinc-600">Arabic · French · English</div>
 		</aside>
 
 		<!-- Main content -->
 		<main class="min-w-0 flex-1">
 			<!-- Experience -->
-			<section id="experience" class="{reveal('experience')}">
+			<section id="experience" class={reveal('experience')}>
 				<h2 class="mb-8 text-lg font-semibold text-white">Experience</h2>
 				<div class="ml-3 border-l border-zinc-800/80 pl-8">
-					{#each experience as job, i}
+					{#each experience as job, i (job.title)}
 						<article class="relative {i < experience.length - 1 ? 'pb-10' : ''}">
 							<div
-								class="absolute -left-[37px] top-[7px] h-2.5 w-2.5 rounded-full border-2 border-zinc-700 bg-zinc-900"
+								class="absolute top-[7px] -left-[37px] h-2.5 w-2.5 rounded-full border-2 border-zinc-700 bg-zinc-900"
 							></div>
 							<div class="flex flex-wrap items-baseline gap-x-3">
 								<h3 class="font-medium text-white">{job.title}</h3>
@@ -302,6 +246,13 @@
 								{job.company} · {job.location}
 							</p>
 							<p class="mt-2 text-sm leading-relaxed text-zinc-400">{job.description}</p>
+							{#if job.highlights}
+								<ul class="mt-3 list-disc space-y-1.5 pl-4 text-sm leading-relaxed text-zinc-400">
+									{#each job.highlights as h (h)}
+										<li>{h}</li>
+									{/each}
+								</ul>
+							{/if}
 						</article>
 					{/each}
 				</div>
@@ -309,11 +260,9 @@
 
 			<hr class="my-12 border-zinc-800/60" />
 
-			<!-- Open Source -->
-			<section id="opensource" class="{reveal('opensource')}">
-				<h2 class="mb-8 text-lg font-semibold text-white">Open Source</h2>
+			{#snippet cards(list: Project[])}
 				<div class="grid gap-4 sm:grid-cols-2">
-					{#each projects as project}
+					{#each list as project (project.name)}
 						<a
 							href={project.url}
 							target="_blank"
@@ -321,9 +270,7 @@
 							class="group rounded-xl border border-zinc-800/60 bg-zinc-900/30 p-5 transition-all hover:border-zinc-700 hover:bg-zinc-900/50"
 						>
 							<div class="flex items-center gap-2">
-								<h3
-									class="font-medium text-white transition-colors group-hover:text-blue-300"
-								>
+								<h3 class="font-medium text-white transition-colors group-hover:text-blue-300">
 									{project.name}
 								</h3>
 								<span
@@ -333,9 +280,8 @@
 							</div>
 							<p class="mt-2 text-sm leading-relaxed text-zinc-400">{project.description}</p>
 							<div class="mt-3 flex flex-wrap gap-1.5">
-								{#each project.tech as t}
-									<span
-										class="rounded-full bg-zinc-800/60 px-2.5 py-0.5 text-xs text-zinc-500"
+								{#each project.tech as t (t)}
+									<span class="rounded-full bg-zinc-800/60 px-2.5 py-0.5 text-xs text-zinc-500"
 										>{t}</span
 									>
 								{/each}
@@ -343,12 +289,34 @@
 						</a>
 					{/each}
 				</div>
+			{/snippet}
+
+			<section id="projects" class={reveal('projects')}>
+				<h2 class="mb-8 text-lg font-semibold text-white">Side Projects</h2>
+				{@render cards(projects)}
+			</section>
+
+			<hr class="my-12 border-zinc-800/60" />
+
+			<section id="opensource" class={reveal('opensource')}>
+				<h2 class="mb-8 text-lg font-semibold text-white">Open Source</h2>
+				{@render cards(openSource)}
 				<p class="mt-8 text-sm text-zinc-600">
 					Also contributed to
-					<span class="text-zinc-500">react-international-phone</span>
-					and
-					<span class="text-zinc-500">validator.js</span>
+					<span class="text-zinc-500">{alsoContributed.join(' and ')}</span>
 				</p>
+			</section>
+
+			<hr class="my-12 border-zinc-800/60" />
+
+			<section id="ai" class={reveal('ai')}>
+				<h2 class="mb-4 text-lg font-semibold text-white">How I Build with AI</h2>
+				<p class="text-sm leading-relaxed text-zinc-400">{ai.intro}</p>
+				<ul class="mt-4 list-disc space-y-1.5 pl-4 text-sm leading-relaxed text-zinc-400">
+					{#each ai.points as point (point)}
+						<li>{point}</li>
+					{/each}
+				</ul>
 			</section>
 		</main>
 	</div>
@@ -362,7 +330,7 @@
 			class="opacity-40 transition-opacity hover:opacity-80"
 			aria-label="GitHub"
 		>
-			<img src="https://cdn.simpleicons.org/github/e4e4e7" alt="GitHub" class="h-4 w-4" />
+			<svg class="h-4 w-4" viewBox="0 0 24 24" fill="#e4e4e7"><path d={siGithub.path} /></svg>
 		</a>
 		<a
 			href="https://linkedin.com/in/k2ll33d/"
@@ -371,14 +339,18 @@
 			class="opacity-40 transition-opacity hover:opacity-80"
 			aria-label="LinkedIn"
 		>
-			<svg class="h-4 w-4" viewBox="0 0 24 24" fill="#e4e4e7"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+			<svg class="h-4 w-4" viewBox="0 0 24 24" fill="#e4e4e7"
+				><path
+					d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"
+				/></svg
+			>
 		</a>
 		<a
 			href="mailto:k2ll33d2@gmail.com"
 			class="opacity-40 transition-opacity hover:opacity-80"
 			aria-label="Email"
 		>
-			<img src="https://cdn.simpleicons.org/gmail/e4e4e7" alt="Email" class="h-4 w-4" />
+			<svg class="h-4 w-4" viewBox="0 0 24 24" fill="#e4e4e7"><path d={siGmail.path} /></svg>
 		</a>
 	</footer>
 </div>
