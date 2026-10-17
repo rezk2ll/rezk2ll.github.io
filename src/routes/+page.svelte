@@ -186,6 +186,31 @@
 				Resume
 			</a>
 
+			<div class="mt-4 grid grid-cols-2 gap-2">
+				<a
+					href="https://ferjani.dev/dojo/"
+					class="group rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-2.5 transition-colors hover:border-emerald-400/40 hover:bg-emerald-500/10"
+				>
+					<span class="flex items-center gap-1 text-sm font-medium text-emerald-300"
+						>Dojo <span aria-hidden="true" class="text-emerald-400/60">↗</span></span
+					>
+					<span class="mt-0.5 block text-xs text-zinc-500 group-hover:text-zinc-400"
+						>Daily practice for engineers</span
+					>
+				</a>
+				<a
+					href="https://ferjani.dev/skills/"
+					class="group rounded-lg border border-orange-500/20 bg-orange-500/5 px-3 py-2.5 transition-colors hover:border-orange-400/40 hover:bg-orange-500/10"
+				>
+					<span class="flex items-center gap-1 text-sm font-medium text-orange-300"
+						>Skills <span aria-hidden="true" class="text-orange-400/60">↗</span></span
+					>
+					<span class="mt-0.5 block text-xs text-zinc-500 group-hover:text-zinc-400"
+						>My Claude Code setup</span
+					>
+				</a>
+			</div>
+
 			<!-- Technologies -->
 			<div class="mt-8">
 				<h2 class="mb-4 text-xs font-semibold tracking-wider text-zinc-600 uppercase">
