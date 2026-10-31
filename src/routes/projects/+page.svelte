@@ -59,40 +59,17 @@
 		document.getElementById('list')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 	}
 
-	// The new theme is revealed through a circle growing from the toggle, while a big wave rolls out
-	// from the same spot in the water.
-	async function toggleTheme(e: MouseEvent) {
+	// The sea paints the new theme as a circle growing from the toggle behind a rolling wave, while
+	// the page colours fade through registered CSS properties. Both stay on the GPU, no snapshots.
+	function toggleTheme(e: MouseEvent) {
 		const next = theme === 'dark' ? 'light' : 'dark';
-		const x = e.clientX;
-		const y = e.clientY;
-		const apply = (instant: boolean) => {
-			theme = next;
-			document.documentElement.dataset.theme = next;
-			localStorage.setItem('projects-theme', next);
-			sea?.setTheme(next === 'light', instant);
-		};
-		window.umami?.track('projects-theme', { theme: next });
-		sea?.splash(x, y, 70, 1.4);
-
 		const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-		if (!document.startViewTransition || reduced) {
-			apply(reduced);
-			return;
-		}
-		const transition = document.startViewTransition(async () => {
-			apply(true);
-			await tick();
-		});
-		await transition.ready;
-		const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
-		document.documentElement.animate(
-			{ clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] },
-			{
-				duration: 1200,
-				easing: 'cubic-bezier(0.65, 0, 0.25, 1)',
-				pseudoElement: '::view-transition-new(root)'
-			}
-		);
+		theme = next;
+		document.documentElement.dataset.theme = next;
+		localStorage.setItem('projects-theme', next);
+		sea?.setTheme(next === 'light', reduced, e.clientX, e.clientY);
+		sea?.splash(e.clientX, e.clientY, 70, 1.4);
+		window.umami?.track('projects-theme', { theme: next });
 	}
 
 	function tilt(node: HTMLElement) {
@@ -130,6 +107,7 @@
 	onMount(() => {
 		theme = document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
 		sea?.setTheme(theme === 'light', true);
+		requestAnimationFrame(() => document.documentElement.classList.add('theme-ready'));
 
 		const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 		let width = hero.clientWidth;
@@ -449,10 +427,62 @@
 		--accent-bg: rgba(3, 105, 161, 0.14);
 		--pill: rgba(255, 255, 255, 0.4);
 	}
-	:global(::view-transition-old(root)),
-	:global(::view-transition-new(root)) {
-		animation: none;
-		mix-blend-mode: normal;
+	@property --fg {
+		syntax: '<color>';
+		inherits: true;
+		initial-value: transparent;
+	}
+	@property --muted {
+		syntax: '<color>';
+		inherits: true;
+		initial-value: transparent;
+	}
+	@property --body {
+		syntax: '<color>';
+		inherits: true;
+		initial-value: transparent;
+	}
+	@property --title {
+		syntax: '<color>';
+		inherits: true;
+		initial-value: transparent;
+	}
+	@property --glass {
+		syntax: '<color>';
+		inherits: true;
+		initial-value: transparent;
+	}
+	@property --glass-strong {
+		syntax: '<color>';
+		inherits: true;
+		initial-value: transparent;
+	}
+	@property --glass-border {
+		syntax: '<color>';
+		inherits: true;
+		initial-value: transparent;
+	}
+	@property --accent {
+		syntax: '<color>';
+		inherits: true;
+		initial-value: transparent;
+	}
+	@property --accent-bg {
+		syntax: '<color>';
+		inherits: true;
+		initial-value: transparent;
+	}
+	@property --pill {
+		syntax: '<color>';
+		inherits: true;
+		initial-value: transparent;
+	}
+	:global(html.theme-ready) {
+		transition-property:
+			--fg, --muted, --body, --title, --glass, --glass-strong, --glass-border, --accent,
+			--accent-bg, --pill;
+		transition-duration: 0.9s;
+		transition-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
 	}
 
 	.title {
@@ -528,7 +558,6 @@
 		background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.4), var(--glass) 70%);
 		border: 1px solid var(--glass-border);
 		box-shadow: 0 8px 22px -8px rgba(0, 0, 0, 0.5);
-		backdrop-filter: blur(6px);
 		will-change: transform;
 		cursor: pointer;
 	}
@@ -601,7 +630,6 @@
 		border: 1px solid var(--glass-border);
 		background: var(--glass);
 		padding: 1.4rem;
-		backdrop-filter: blur(3px) saturate(1.3);
 		box-shadow: 0 25px 50px -25px rgba(0, 0, 0, 0.55);
 		transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
 		transition:
