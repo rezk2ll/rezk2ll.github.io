@@ -122,6 +122,13 @@ export const projects: Project[] = [
 		url: 'https://github.com/rezk2ll/claude-agents-indicator'
 	},
 	{
+		name: 'tuxmedic',
+		description:
+			'A terminal app that finds what is wrong with a Linux desktop and says it in plain words: crashes, Wi-Fi, sound, screens, battery and 30 checks in all, each with the command that fixes it on your distro. Works on any distro and any terminal size, without root.',
+		tech: ['Go', 'Bubble Tea', 'D-Bus'],
+		url: 'https://github.com/rezk2ll/tuxmedic'
+	},
+	{
 		name: 'Vetixa',
 		description: 'Veterinary clinic management system, in production at vetixa.tn',
 		tech: ['SvelteKit', 'PocketBase', 'TailwindCSS', 'Zod'],
