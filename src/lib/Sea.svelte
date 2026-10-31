@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { buildStrip, createPond, STRIP_FLOATS, STRIP_INDICES, touches, updatePond } from './koi';
+	import { buildStrip, createPond, STRIP_FLOATS, STRIP_INDICES, updatePond } from './koi';
 
 	export const REVEAL_MS = 1100;
 
@@ -454,8 +454,7 @@ void main() {
 			input.px = e.clientX;
 			input.py = e.clientY;
 			input.pspeed = Math.max(input.pspeed, 1);
-			const hit = fishes.some((f) => touches(f, e.clientX, e.clientY));
-			splash(e.clientX, e.clientY, hit ? 30 : 22, hit ? 0.9 : 0.6);
+			splash(e.clientX, e.clientY, 22, 0.6);
 		}
 		addEventListener('pointermove', onMove, { passive: true });
 		addEventListener('pointerdown', onDown, { passive: true });
@@ -472,17 +471,11 @@ void main() {
 		let raf = 0;
 		let last = performance.now();
 		let simDebt = 0;
-		let wakeDebt = 0;
 		function loop(t: number) {
 			const dt = Math.min(0.05, (t - last) / 1000);
 			last = t;
 			input.pspeed *= Math.exp(-dt * 10);
-			updatePond(fishes, t / 1000, dt, input, W, H, (f) => splash(f.x, f.y, 40, 1));
-			wakeDebt += dt;
-			if (wakeDebt > 0.05) {
-				wakeDebt = 0;
-				for (const f of fishes) splash(f.x, f.y, 10, 0.02 + f.speed * 0.0006);
-			}
+			updatePond(fishes, t / 1000, dt, input, W, H, (f) => splash(f.x, f.y, 24, 0.25));
 			if (Math.random() < dt * 1.2) splash(Math.random() * W, Math.random() * H, 6, 0.15);
 			simDebt = Math.min(simDebt + dt * 120, 4);
 			while (simDebt >= 1) {
