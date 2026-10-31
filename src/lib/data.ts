@@ -104,7 +104,14 @@ export const experience: Job[] = [
 	}
 ];
 
-export type Project = { name: string; description: string; tech: string[]; url: string };
+export type Project = {
+	name: string;
+	description: string;
+	tech: string[];
+	url: string;
+	repo?: string;
+	year?: number;
+};
 
 export const projects: Project[] = [
 	{
@@ -112,7 +119,8 @@ export const projects: Project[] = [
 		description:
 			'Short daily lessons for software engineers on architecture, DevOps, databases, security and more, in French and English. Works offline, and spaced repetition brings old topics back before you forget them.',
 		tech: ['SvelteKit', 'PWA', 'Mermaid'],
-		url: 'https://ferjani.dev/dojo'
+		url: 'https://ferjani.dev/dojo',
+		repo: 'https://github.com/rezk2ll/dojo'
 	},
 	{
 		name: 'Claude Agents Indicator',
@@ -138,13 +146,100 @@ export const projects: Project[] = [
 		name: 'Eat Explained',
 		description: 'Interactive guide to nutrition',
 		tech: ['SvelteKit', 'TailwindCSS'],
-		url: 'https://eatexplained.github.io/'
+		url: 'https://eatexplained.github.io/',
+		repo: 'https://github.com/rezk2ll/eatexplained'
 	},
 	{
 		name: 'svelte-num-otp',
 		description: 'OTP input component for Svelte, published on npm',
 		tech: ['Svelte', 'TailwindCSS'],
 		url: 'https://github.com/rezk2ll/svelte-num-otp'
+	}
+];
+
+export const showcase: { title: string; intro: string; items: Project[] }[] = [
+	{
+		title: 'Projects',
+		intro: 'Things I build and keep running.',
+		items: [
+			...projects.filter((p) => p.name !== 'svelte-num-otp'),
+			{
+				name: 'Skills',
+				description:
+					'The Claude Code skills, guardrail hooks and mods I use every day, packaged as plugins you can install one at a time.',
+				tech: ['Claude Code', 'SvelteKit', 'Python'],
+				url: 'https://ferjani.dev/skills/',
+				repo: 'https://github.com/rezk2ll/skills'
+			},
+			{
+				name: 'SplitShare',
+				description:
+					'Social fitness app: build gym splits, log workouts with personal records tracked for you and suggestions for when to add weight, and share routines with the community. Web, Android and iOS.',
+				tech: ['SvelteKit', 'Drizzle', 'Capacitor', 'TailwindCSS'],
+				url: 'https://github.com/rezk2ll/splitshare'
+			}
+		]
+	},
+	{
+		title: 'Libraries',
+		intro: 'Small pieces published for others to reuse.',
+		items: projects.filter((p) => p.name === 'svelte-num-otp')
+	},
+	{
+		title: 'Experiments',
+		intro: 'Weekend builds to try out a framework or an idea.',
+		items: [
+			{
+				name: 'Canvas playground',
+				description: 'Drawing on an HTML canvas with Svelte 5',
+				tech: ['Svelte 5', 'Canvas'],
+				url: 'https://canvas-playground-liart.vercel.app',
+				repo: 'https://github.com/rezk2ll/canvas-playground',
+				year: 2024
+			},
+			{
+				name: 'Svelte 5 runes todo',
+				description: 'A todo app written with Svelte 5 runes',
+				tech: ['Svelte 5'],
+				url: 'https://svelte-5-runes-todo.vercel.app',
+				repo: 'https://github.com/rezk2ll/svelte-5-runes-todo',
+				year: 2024
+			},
+			{
+				name: 'Astro multi-library todo',
+				description:
+					'One todo list built from seven UI libraries at once (Svelte, React, Vue, Solid, Lit, Preact and Astro), all sharing a single MobX store',
+				tech: ['Astro', 'MobX', 'TailwindCSS'],
+				url: 'https://astro-multi-library-todo.vercel.app',
+				repo: 'https://github.com/rezk2ll/astro-multi-library-todo',
+				year: 2023
+			},
+			{
+				name: 'Remix HN clone',
+				description: 'A Hacker News reader built with Remix',
+				tech: ['Remix', 'TailwindCSS'],
+				url: 'https://remix-hn-clone.vercel.app',
+				repo: 'https://github.com/rezk2ll/remix-hn-clone',
+				year: 2023
+			},
+			{
+				name: 'Qwik City + React todo',
+				description:
+					'A todo app mixing Qwik City and React components, with Valtio for shared state',
+				tech: ['Qwik', 'React', 'Valtio'],
+				url: 'https://qwik-city-react-todo-app.vercel.app',
+				repo: 'https://github.com/rezk2ll/qwik-city-react-todo-app',
+				year: 2022
+			},
+			{
+				name: 'SvelteKit forecast',
+				description: 'Weather for your current location or any city, as an installable PWA',
+				tech: ['SvelteKit', 'PWA', 'OpenWeatherMap'],
+				url: 'https://sveltekit-forecast.vercel.app',
+				repo: 'https://github.com/rezk2ll/sveltekit-forecast',
+				year: 2022
+			}
+		]
 	}
 ];
 

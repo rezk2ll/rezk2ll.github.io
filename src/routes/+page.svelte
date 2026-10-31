@@ -360,6 +360,12 @@
 			<section id="projects" class={reveal('projects')}>
 				<h2 class="mb-8 text-lg font-semibold text-white">Side Projects</h2>
 				{@render cards(projects)}
+				<a
+					href="https://projects.ferjani.dev"
+					data-umami-event="open-projects"
+					class="mt-5 inline-flex items-center gap-1.5 rounded-lg border border-zinc-800 px-3 py-1.5 text-sm text-zinc-300 transition-colors hover:border-zinc-700 hover:text-white"
+					>All projects and experiments <span aria-hidden="true">↗</span></a
+				>
 			</section>
 
 			<hr class="my-12 border-zinc-800/60" />
