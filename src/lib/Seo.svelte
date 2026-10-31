@@ -5,10 +5,17 @@
 		title,
 		description,
 		path,
+		origin = SITE,
 		jsonLd
-	}: { title: string; description: string; path: string; jsonLd?: object } = $props();
+	}: {
+		title: string;
+		description: string;
+		path: string;
+		origin?: string;
+		jsonLd?: object;
+	} = $props();
 
-	const url = $derived(SITE + path);
+	const url = $derived(origin + path);
 	const ldScript = $derived(
 		jsonLd
 			? `<script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}<` +
