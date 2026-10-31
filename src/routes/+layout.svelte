@@ -2,8 +2,11 @@
 	import '@fontsource-variable/inter';
 	import '../app.css';
 	import { onMount } from 'svelte';
+	import { page } from '$app/state';
 
 	let { children } = $props();
+
+	const ambient = $derived(!page.url.pathname.startsWith('/projects'));
 
 	let canvas: HTMLCanvasElement;
 	let spotlight: HTMLDivElement;
@@ -103,6 +106,7 @@
 <canvas
 	bind:this={canvas}
 	class="no-print pointer-events-none fixed inset-0 z-10"
+	class:hidden={!ambient}
 	aria-hidden="true"
 ></canvas>
 
@@ -110,9 +114,10 @@
 <div
 	bind:this={spotlight}
 	class="no-print pointer-events-none fixed inset-0 z-0 transition-opacity duration-300"
+	class:hidden={!ambient}
 	style="background: radial-gradient(700px circle at {mouseX}px {mouseY}px, rgba(80, 100, 160, 0.08), transparent 70%);"
 	aria-hidden="true"
 ></div>
 
 <!-- Grain texture -->
-<div class="no-print grain-overlay" aria-hidden="true"></div>
+<div class="no-print grain-overlay" class:hidden={!ambient} aria-hidden="true"></div>
