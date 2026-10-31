@@ -1,0 +1,1 @@
+import{m as b,o as h,q as k,u as q,S as T}from"./DfDJ51Uc.js";function u(r,i){return r===i||r?.[T]===i}function d(r={},i,a,S){return b(()=>{var f,s;return h(()=>{f=s,s=S?.()||[],q(()=>{r!==a(...s)&&(i(r,...s),f&&u(a(...f),r)&&i(null,...f))})}),()=>{k(()=>{s&&u(a(...s),r)&&i(null,...s)})}}),r}export{d as b};
