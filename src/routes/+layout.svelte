@@ -6,7 +6,9 @@
 
 	let { children } = $props();
 
-	const ambient = $derived(!page.url.pathname.startsWith('/projects'));
+	const ambient = $derived(
+		!page.url.pathname.startsWith('/projects') && !page.url.hostname.startsWith('projects.')
+	);
 
 	let canvas: HTMLCanvasElement;
 	let spotlight: HTMLDivElement;
