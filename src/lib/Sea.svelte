@@ -1,19 +1,24 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { buildStrip, createPond, STRIP_INDICES, updatePond, type Pellet } from './koi';
+	import { buildStrip, createPond, STRIP_FLOATS, STRIP_INDICES, touches, updatePond } from './koi';
+
+	export const REVEAL_MS = 1100;
 
 	let canvas: HTMLCanvasElement;
 	let drops: [number, number, number, number][] = [];
-	let themeTarget = 0;
-	let themeNow = 0;
+	let themeFrom = 0;
+	let themeTo = 0;
+	let reveal = { x: 0, y: 0, start: -1e9 };
 
 	export function splash(x: number, y: number, radius = 20, strength = 0.3) {
 		if (drops.length < 16) drops.push([x, y, radius, strength]);
 	}
 
-	export function setTheme(light: boolean, instant = false) {
-		themeTarget = light ? 1 : 0;
-		if (instant) themeNow = themeTarget;
+	// The new theme spreads through the water as a circle growing from (x, y).
+	export function setTheme(light: boolean, instant = false, x = 0, y = 0) {
+		themeFrom = instant ? (light ? 1 : 0) : themeTo;
+		themeTo = light ? 1 : 0;
+		reveal = { x, y, start: instant ? -1e9 : performance.now() };
 	}
 
 	const QUAD_VERT = `#version 300 es
@@ -95,10 +100,9 @@ uniform vec2 res;
 uniform vec2 simTexel;
 uniform vec2 mouse;
 uniform float time;
-uniform float theme;
+uniform vec2 themes;
+uniform vec3 reveal;
 uniform float scroll;
-uniform vec4 pellets[15];
-uniform int pelletCount;
 
 float hash(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
 float noise(vec2 p) {
@@ -134,6 +138,8 @@ float caustics(vec2 p) {
 
 void main() {
 	vec2 px = uv * res;
+	float rd = length(px - reveal.xy) - reveal.z;
+	float theme = mix(themes.x, themes.y, smoothstep(60.0, -60.0, rd));
 
 	float h = texture(sim, uv).r;
 	float hl = texture(sim, uv - vec2(simTexel.x * 1.5, 0.0)).r;
@@ -163,7 +169,12 @@ void main() {
 
 	vec2 fp = px + n.xy * 22.0;
 	vec4 fc = texture(fish, fp / res);
-	float sh = textureLod(fish, (fp + vec2(-26.0, 34.0)) / res, 4.0).a;
+	vec2 sp = fp + vec2(-26.0, 34.0);
+	float sh = (
+		texture(fish, sp / res).a +
+		texture(fish, (sp + vec2(11.0, 7.0)) / res).a + texture(fish, (sp + vec2(-7.0, 11.0)) / res).a +
+		texture(fish, (sp + vec2(-11.0, -7.0)) / res).a + texture(fish, (sp + vec2(7.0, -11.0)) / res).a
+	) * 0.2;
 
 	vec3 sun = vec3(1.0, 0.97, 0.9);
 	vec3 moon = vec3(0.3, 0.4, 0.62) * 0.7;
@@ -181,13 +192,6 @@ void main() {
 	vec3 tf = exp(-absorb * depth * mix(0.25, 0.6, theme));
 	vec3 col = (bed * tb + water * (1.0 - tb)) * (1.0 - fc.a) + koi * tf + water * (1.0 - tf) * fc.a;
 
-	for (int k = 0; k < 15; k++) {
-		if (k >= pelletCount) break;
-		float pd = length(px + n.xy * 6.0 - pellets[k].xy);
-		float pa = smoothstep(4.5, 3.0, pd) * pellets[k].z;
-		col = mix(col, vec3(0.45, 0.28, 0.13) * light * (0.8 + 0.4 * smoothstep(3.0, 0.0, length(px - pellets[k].xy + vec2(1.0, -1.0)))), pa);
-	}
-
 	vec3 sky = mix(vec3(0.02, 0.05, 0.12), vec3(0.75, 0.9, 1.0), theme);
 	col = mix(col, sky, clamp(0.04 + (1.0 - n.z) * 6.0, 0.0, 0.35));
 
@@ -201,12 +205,14 @@ void main() {
 
 	vec2 vq = uv - 0.5;
 	col *= 1.0 - dot(vq, vq) * mix(0.9, 0.35, theme);
+
+	float front = exp(-rd * rd / 900.0) * abs(themes.y - themes.x);
+	col += vec3(0.75, 0.95, 1.0) * front * 0.35 * (0.6 + 0.4 * noise(px * 0.08 + time));
 	o = vec4(col, 1.0);
 }`;
 
 	onMount(() => {
 		const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-		themeNow = themeTarget;
 		const gl = canvas.getContext('webgl2', { antialias: false, alpha: false });
 		if (!gl) {
 			canvas.style.background = 'linear-gradient(#0b4f6c, #04121e)';
@@ -318,7 +324,7 @@ void main() {
 			}
 			targets = ripples ? [target(), target()] : [];
 
-			texture(fishTex, true);
+			texture(fishTex, false);
 			gl!.texImage2D(gl!.TEXTURE_2D, 0, gl!.RGBA8, W, H, 0, gl!.RGBA, gl!.UNSIGNED_BYTE, null);
 			gl!.bindFramebuffer(gl!.FRAMEBUFFER, fishFb);
 			gl!.framebufferTexture2D(gl!.FRAMEBUFFER, gl!.COLOR_ATTACHMENT0, gl!.TEXTURE_2D, fishTex, 0);
@@ -326,13 +332,8 @@ void main() {
 		resize();
 
 		const fishes = createPond(W, H);
-		const input = {
-			px: -1e4,
-			py: -1e4,
-			pspeed: 0,
-			lastMove: -1e4,
-			pellets: [] as Pellet[]
-		};
+		const input = { px: -1e4, py: -1e4, pspeed: 0 };
+		const strip = new Float32Array(STRIP_FLOATS);
 
 		function pass(prog: { u: (n: string) => WebGLUniformLocation | null }) {
 			gl!.bindFramebuffer(gl!.FRAMEBUFFER, targets[1].fb);
@@ -360,7 +361,6 @@ void main() {
 			gl!.useProgram(stepP.p);
 			gl!.uniform2f(stepP.u('texel'), 1 / sw, 1 / sh);
 			pass(stepP);
-			pass(stepP);
 		}
 
 		function renderFish() {
@@ -382,14 +382,12 @@ void main() {
 				if (!photo.aspect) continue;
 				gl!.bindTexture(gl!.TEXTURE_2D, photo.tex);
 				gl!.uniform1f(fishP.u('fade'), 1 - f.depth * 0.2);
-				gl!.bufferData(gl!.ARRAY_BUFFER, buildStrip(f, photo.aspect), gl!.DYNAMIC_DRAW);
+				gl!.bufferData(gl!.ARRAY_BUFFER, buildStrip(f, photo.aspect, strip), gl!.DYNAMIC_DRAW);
 				gl!.drawElements(gl!.TRIANGLES, STRIP_INDICES.length, gl!.UNSIGNED_SHORT, 0);
 			}
 
 			gl!.disable(gl!.BLEND);
 			gl!.bindVertexArray(null);
-			gl!.bindTexture(gl!.TEXTURE_2D, fishTex);
-			gl!.generateMipmap(gl!.TEXTURE_2D);
 		}
 
 		function render(t: number) {
@@ -409,14 +407,13 @@ void main() {
 			gl!.uniform2f(u('simTexel'), 1 / sw, 1 / sh);
 			gl!.uniform2f(u('mouse'), input.px, H - input.py);
 			gl!.uniform1f(u('time'), t / 1000);
-			gl!.uniform1f(u('theme'), themeNow);
+			const p = Math.min(1, (performance.now() - reveal.start) / REVEAL_MS);
+			if (p >= 1) themeFrom = themeTo;
+			const eased = 1 - Math.pow(1 - p, 3);
+			const far = Math.hypot(Math.max(reveal.x, W - reveal.x), Math.max(reveal.y, H - reveal.y));
+			gl!.uniform2f(u('themes'), themeFrom, themeTo);
+			gl!.uniform3f(u('reveal'), reveal.x, H - reveal.y, eased * (far + 120));
 			gl!.uniform1f(u('scroll'), scrollY);
-			const flat = new Float32Array(60);
-			input.pellets.forEach((p, k) =>
-				flat.set([p.x, H - p.y, Math.min(1, (12000 - (t - p.born)) / 2000), 0], k * 4)
-			);
-			gl!.uniform4fv(u('pellets'), flat);
-			gl!.uniform1i(u('pelletCount'), input.pellets.length);
 			gl!.drawArrays(gl!.TRIANGLES, 0, 3);
 		}
 
@@ -427,11 +424,12 @@ void main() {
 		addEventListener('resize', onResize, { passive: true });
 
 		if (reduced) {
-			updatePond(fishes, 4000, input, W, H, () => {});
+			for (let k = 0; k < 30; k++) updatePond(fishes, k / 10, 0.1, input, W, H, () => {});
 			render(4000);
+			let shown = themeTo;
 			const id = setInterval(() => {
-				if (themeNow !== themeTarget) {
-					themeNow = themeTarget;
+				if (shown !== themeTo) {
+					shown = themeFrom = themeTo;
 					render(4000);
 				}
 			}, 100);
@@ -451,19 +449,13 @@ void main() {
 			}
 			lastX = input.px = e.clientX;
 			lastY = input.py = e.clientY;
-			input.lastMove = performance.now();
 		}
 		function onDown(e: PointerEvent) {
-			splash(e.clientX, e.clientY, 22, 0.6);
-			const now = performance.now();
-			for (let k = 0; k < 3; k++) {
-				input.pellets.push({
-					x: e.clientX + (Math.random() - 0.5) * 40,
-					y: e.clientY + (Math.random() - 0.5) * 40,
-					born: now
-				});
-			}
-			input.pellets = input.pellets.slice(-15);
+			input.px = e.clientX;
+			input.py = e.clientY;
+			input.pspeed = Math.max(input.pspeed, 1);
+			const hit = fishes.some((f) => touches(f, e.clientX, e.clientY));
+			splash(e.clientX, e.clientY, hit ? 30 : 22, hit ? 0.9 : 0.6);
 		}
 		addEventListener('pointermove', onMove, { passive: true });
 		addEventListener('pointerdown', onDown, { passive: true });
@@ -475,22 +467,28 @@ void main() {
 			);
 		}
 
+		// Fish move in real time and the ripple grid steps at a fixed 120 Hz, so a 144 Hz screen and a
+		// 60 Hz one show the same speeds.
 		let raf = 0;
-		let frame = 0;
+		let last = performance.now();
+		let simDebt = 0;
+		let wakeDebt = 0;
 		function loop(t: number) {
-			frame++;
-			themeNow += (themeTarget - themeNow) * 0.06;
-			input.pspeed *= 0.85;
-			input.pellets = input.pellets.filter((p) => t - p.born < 12000);
-			updatePond(fishes, t, input, W, H, (p) => {
-				input.pellets = input.pellets.filter((q) => q !== p);
-				splash(p.x, p.y, 14, 0.5);
-			});
-			if (frame % 3 === 0) {
-				for (const f of fishes) splash(f.x, f.y, 10, 0.015 + f.speed * 0.01);
+			const dt = Math.min(0.05, (t - last) / 1000);
+			last = t;
+			input.pspeed *= Math.exp(-dt * 10);
+			updatePond(fishes, t / 1000, dt, input, W, H, (f) => splash(f.x, f.y, 40, 1));
+			wakeDebt += dt;
+			if (wakeDebt > 0.05) {
+				wakeDebt = 0;
+				for (const f of fishes) splash(f.x, f.y, 10, 0.02 + f.speed * 0.0006);
 			}
-			if (Math.random() < 0.02) splash(Math.random() * W, Math.random() * H, 6, 0.15);
-			sim();
+			if (Math.random() < dt * 1.2) splash(Math.random() * W, Math.random() * H, 6, 0.15);
+			simDebt = Math.min(simDebt + dt * 120, 4);
+			while (simDebt >= 1) {
+				sim();
+				simDebt--;
+			}
 			render(t);
 			raf = requestAnimationFrame(loop);
 		}
