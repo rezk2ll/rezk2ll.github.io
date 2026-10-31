@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { buildStrip, createPond, STRIP_FLOATS, STRIP_INDICES, updatePond } from './koi';
+	import { buildStrip, createPond, FINS, STRIP_FLOATS, STRIP_INDICES, updatePond } from './koi';
 
 	export const REVEAL_MS = 1100;
 
@@ -83,8 +83,31 @@ in vec2 vUv;
 out vec4 o;
 uniform sampler2D photo;
 uniform float fade;
+uniform float aspect;
+uniform vec2 fins;
+uniform vec4 finR;
+uniform vec4 finL;
+vec2 rot(vec2 d, float a) { float c = cos(a); float s = sin(a); return vec2(d.x * c - d.y * s, d.x * s + d.y * c); }
+// A pectoral fin swings around its pivot: the pixel is read from where the fin was in the photo,
+// and only fin pixels (outside the body edge) are moved.
+// Gradients come from the unwarped uv, or the jump at the fin edge picks a tiny mip and draws a seam.
+vec4 fin(vec2 uv, vec4 f, float angle, float side, vec2 gx, vec2 gy) {
+	vec2 piv = vec2(f.x, f.y * aspect);
+	vec2 s = piv + rot(vec2(uv.x, uv.y * aspect) - piv, angle * side);
+	s.y /= aspect;
+	bool inside = side * (f.y - s.y) > 0.0 && s.x > f.z && s.x < f.w;
+	vec4 moved = inside ? textureGrad(photo, s, gx, gy) : vec4(0.0);
+	moved *= smoothstep(0.35, 0.7, moved.a) * smoothstep(f.z, f.z + 0.03, s.x) * smoothstep(f.w, f.w - 0.03, s.x);
+	float edge = smoothstep(0.03, 0.0, side * (f.y - uv.y));
+	return mix(moved, textureGrad(photo, uv, gx, gy), edge);
+}
 void main() {
-	vec4 c = texture(photo, vUv);
+	vec2 gx = dFdx(vUv);
+	vec2 gy = dFdy(vUv);
+	vec4 c;
+	if (vUv.x > finR.z && vUv.x < finR.w + 0.06 && vUv.y < finR.y) c = fin(vUv, finR, fins.x, 1.0, gx, gy);
+	else if (vUv.x > finL.z && vUv.x < finL.w + 0.06 && vUv.y > finL.y) c = fin(vUv, finL, fins.y, -1.0, gx, gy);
+	else c = textureGrad(photo, vUv, gx, gy);
 	o = vec4(c.rgb * c.a, c.a) * fade;
 }`;
 
@@ -382,6 +405,10 @@ void main() {
 				if (!photo.aspect) continue;
 				gl!.bindTexture(gl!.TEXTURE_2D, photo.tex);
 				gl!.uniform1f(fishP.u('fade'), 1 - f.depth * 0.2);
+				gl!.uniform1f(fishP.u('aspect'), photo.aspect);
+				gl!.uniform2f(fishP.u('fins'), f.fins[0], f.fins[1]);
+				gl!.uniform4fv(fishP.u('finR'), FINS[f.variety][0]);
+				gl!.uniform4fv(fishP.u('finL'), FINS[f.variety][1]);
 				gl!.bufferData(gl!.ARRAY_BUFFER, buildStrip(f, photo.aspect, strip), gl!.DYNAMIC_DRAW);
 				gl!.drawElements(gl!.TRIANGLES, STRIP_INDICES.length, gl!.UNSIGNED_SHORT, 0);
 			}
@@ -424,7 +451,7 @@ void main() {
 		addEventListener('resize', onResize, { passive: true });
 
 		if (reduced) {
-			for (let k = 0; k < 30; k++) updatePond(fishes, k / 10, 0.1, input, W, H, () => {});
+			for (let k = 0; k < 30; k++) updatePond(fishes, k / 10, 0.1, input, W, H);
 			render(4000);
 			let shown = themeTo;
 			const id = setInterval(() => {
@@ -439,16 +466,11 @@ void main() {
 			};
 		}
 
-		let lastX = -1;
-		let lastY = -1;
 		function onMove(e: PointerEvent) {
-			if (lastX >= 0) {
-				const speed = Math.hypot(e.clientX - lastX, e.clientY - lastY);
-				input.pspeed = Math.max(input.pspeed, speed);
-				splash(e.clientX, e.clientY, 10, Math.min(speed * 0.004, 0.12));
-			}
-			lastX = input.px = e.clientX;
-			lastY = input.py = e.clientY;
+			const speed = Math.hypot(e.clientX - input.px, e.clientY - input.py);
+			if (speed < 500) input.pspeed = Math.max(input.pspeed, speed);
+			input.px = e.clientX;
+			input.py = e.clientY;
 		}
 		function onDown(e: PointerEvent) {
 			input.px = e.clientX;
@@ -459,13 +481,6 @@ void main() {
 		addEventListener('pointermove', onMove, { passive: true });
 		addEventListener('pointerdown', onDown, { passive: true });
 
-		for (let k = 0; k < 4; k++) {
-			setTimeout(
-				() => splash(W * (0.2 + Math.random() * 0.6), H * (0.25 + Math.random() * 0.5), 26, 0.7),
-				300 + k * 350
-			);
-		}
-
 		// Fish move in real time and the ripple grid steps at a fixed 120 Hz, so a 144 Hz screen and a
 		// 60 Hz one show the same speeds.
 		let raf = 0;
@@ -475,8 +490,7 @@ void main() {
 			const dt = Math.min(0.05, (t - last) / 1000);
 			last = t;
 			input.pspeed *= Math.exp(-dt * 10);
-			updatePond(fishes, t / 1000, dt, input, W, H, (f) => splash(f.x, f.y, 24, 0.25));
-			if (Math.random() < dt * 1.2) splash(Math.random() * W, Math.random() * H, 6, 0.15);
+			updatePond(fishes, t / 1000, dt, input, W, H);
 			simDebt = Math.min(simDebt + dt * 120, 4);
 			while (simDebt >= 1) {
 				sim();
