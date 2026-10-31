@@ -115,6 +115,13 @@ export const projects: Project[] = [
 		url: 'https://ferjani.dev/dojo'
 	},
 	{
+		name: 'Claude Agents Indicator',
+		description:
+			'Shows which Claude Code session is waiting on you, from the Linux panel: a Wingpanel indicator for elementary OS, a tray app for KDE, GNOME and Xfce, and a waybar module. Packaged for Ubuntu, Debian, Fedora and Arch.',
+		tech: ['Vala', 'GTK', 'D-Bus'],
+		url: 'https://github.com/rezk2ll/claude-agents-indicator'
+	},
+	{
 		name: 'Vetixa',
 		description: 'Veterinary clinic management system, in production at vetixa.tn',
 		tech: ['SvelteKit', 'PocketBase', 'TailwindCSS', 'Zod'],
