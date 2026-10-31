@@ -1,6 +1,6 @@
 type Point = { x: number; y: number };
 
-export type Pellet = { x: number; y: number; born: number };
+type Mood = 'roam' | 'follow' | 'glide';
 
 export type Koi = {
 	x: number;
@@ -12,21 +12,18 @@ export type Koi = {
 	spine: Point[];
 	length: number;
 	variety: number;
-	seed: number;
-	scared: number;
-	depth: number;
 	phase: number;
+	depth: number;
+	scared: number;
+	mood: Mood;
+	moodUntil: number;
 };
 
-export type PondInput = {
-	px: number;
-	py: number;
-	pspeed: number;
-	lastMove: number;
-	pellets: Pellet[];
-};
+export type PondInput = { px: number; py: number; pspeed: number };
 
 const N = 28;
+const CRUISE = 30;
+const FLEE = 230;
 
 const wrap = (a: number) => Math.atan2(Math.sin(a), Math.cos(a));
 
@@ -36,15 +33,16 @@ function make(x: number, y: number, angle: number, variety: number, W: number): 
 		y,
 		angle,
 		turn: 0,
-		speed: 1.2,
+		speed: CRUISE,
 		beat: Math.random() * 10,
 		spine: Array.from({ length: N }, () => ({ x, y })),
 		length: Math.max(240, Math.min(W * 0.3, 480)),
 		variety,
-		seed: Math.random() * 10,
-		scared: 0,
+		phase: Math.random() * 100,
 		depth: 0.5,
-		phase: Math.random() * 10
+		scared: 0,
+		mood: 'roam',
+		moodUntil: 4 + Math.random() * 6
 	};
 }
 
@@ -52,80 +50,99 @@ export function createPond(W: number, H: number): Koi[] {
 	return [make(W * 0.3, H * 0.65, -0.3, 0, W), make(W * 0.72, H * 0.3, 2.6, 1, W)];
 }
 
-// Steering: wander, follow a slow pointer, chase food, flee a fast swipe. The spine is an arc set by
-// the turn rate plus a travelling wave that grows toward the tail, so the head stays steady.
+// True when the point lies on the fish's body, measured against the front two thirds of the spine.
+export function touches(f: Koi, x: number, y: number) {
+	for (let i = 0; i < N * 0.7; i++) {
+		const p = f.spine[i];
+		if (Math.hypot(p.x - x, p.y - y) < f.length * 0.11) return true;
+	}
+	return false;
+}
+
+function pickMood(f: Koi, t: number) {
+	const r = Math.random();
+	f.mood = r < 0.45 ? 'roam' : r < 0.8 ? 'follow' : 'glide';
+	f.moodUntil = t + 6 + Math.random() * 10;
+}
+
+// Each koi roams on a slowly drifting heading, sometimes swims alongside the other one, sometimes
+// glides. A pointer touching its body startles it. Speeds are in px/s and the steps scale with dt,
+// so the motion is the same at any frame rate.
 export function updatePond(
 	fishes: Koi[],
 	t: number,
+	dt: number,
 	input: PondInput,
 	W: number,
 	H: number,
-	onEat: (p: Pellet) => void
+	onStartle: (f: Koi) => void
 ) {
 	for (const f of fishes) {
-		let desired = f.angle + Math.sin(t * 0.0004 + f.phase) * 0.5;
-		let target = 1.1;
-		const dPointer = Math.hypot(input.px - f.x, input.py - f.y);
-		if (input.pspeed > 45 && dPointer < f.length * 0.8) f.scared = 1;
+		if (t > f.moodUntil) pickMood(f, t);
+		const other = fishes.find((o) => o !== f);
 
-		let food: Pellet | undefined;
-		let foodD = Infinity;
-		for (const p of input.pellets) {
-			const d = Math.hypot(p.x - f.x, p.y - f.y);
-			if (d < foodD) {
-				food = p;
-				foodD = d;
+		const drift =
+			Math.sin(t * 0.13 + f.phase) * 0.6 +
+			Math.sin(t * 0.051 + f.phase * 1.7) * 0.9 +
+			Math.sin(t * 0.31 + f.phase * 0.3) * 0.25;
+		let desired = f.angle + drift;
+		let target = f.mood === 'glide' ? CRUISE * 0.55 : CRUISE;
+
+		if (f.mood === 'follow' && other) {
+			const side = f.variety === 0 ? 1 : -1;
+			const back = f.length * 0.5;
+			const beside = f.length * 0.35 * side;
+			const ox = other.x - Math.cos(other.angle) * back - Math.sin(other.angle) * beside;
+			const oy = other.y - Math.sin(other.angle) * back + Math.cos(other.angle) * beside;
+			const d = Math.hypot(ox - f.x, oy - f.y);
+			desired = d > f.length * 0.25 ? Math.atan2(oy - f.y, ox - f.x) : other.angle;
+			target = Math.min(CRUISE * 1.8, Math.max(other.speed * 0.9, CRUISE * 0.6 + d * 0.08));
+		}
+
+		if (other) {
+			const d = Math.hypot(other.x - f.x, other.y - f.y);
+			if (d < f.length * 0.55) {
+				desired += wrap(Math.atan2(f.y - other.y, f.x - other.x) - desired) * 0.6;
 			}
 		}
 
-		if (f.scared > 0.05) {
+		if (input.pspeed > 0 && f.scared < 0.3 && touches(f, input.px, input.py)) {
+			f.scared = 1;
+			onStartle(f);
+		}
+		if (f.scared > 0.02) {
 			desired = Math.atan2(f.y - input.py, f.x - input.px);
-			target = 1.2 + 5 * f.scared;
-			f.scared *= 0.985;
-		} else if (food) {
-			desired = Math.atan2(food.y - f.y, food.x - f.x);
-			target = foodD < f.length * 0.5 ? 1.6 : 3;
-			if (foodD < f.length * 0.05) onEat(food);
-		} else if (t - input.lastMove < 2500 && dPointer < 420) {
-			desired = Math.atan2(input.py - f.y, input.px - f.x);
-			target = 1.6;
-			if (dPointer < f.length * 0.6) {
-				desired += Math.PI / 2;
-				target = 0.8;
-			}
+			target = CRUISE + (FLEE - CRUISE) * f.scared;
+			f.scared *= Math.exp(-dt * 0.9);
 		}
 
-		for (const o of fishes) {
-			if (o === f) continue;
-			const d = Math.hypot(o.x - f.x, o.y - f.y);
-			if (d < f.length * 0.7) desired += wrap(Math.atan2(f.y - o.y, f.x - o.x) - desired) * 0.5;
-		}
+		const m = Math.min(180, W * 0.12);
+		const out = f.x < m || f.x > W - m || f.y < m || f.y > H - m;
+		if (out) desired = Math.atan2(H / 2 - f.y, W / 2 - f.x);
 
-		const m = Math.min(160, W * 0.12);
-		if (f.x < m || f.x > W - m || f.y < m || f.y > H - m) {
-			desired = Math.atan2(H / 2 - f.y, W / 2 - f.x);
-		}
-
-		const maxTurn = 0.012 + f.speed * 0.006;
-		const dTurn = Math.max(-maxTurn, Math.min(maxTurn, wrap(desired - f.angle)));
+		const maxTurn = (f.scared > 0.1 ? 2.6 : out ? 1.2 : 0.7) * dt;
+		const want = wrap(desired - f.angle) * Math.min(1, dt * 2);
+		const dTurn = Math.max(-maxTurn, Math.min(maxTurn, want));
 		f.angle += dTurn;
-		f.turn += (dTurn - f.turn) * 0.1;
-		f.speed += (target - f.speed) * 0.03;
-		f.beat += 0.05 + f.speed * 0.045;
-		f.x += Math.cos(f.angle) * f.speed;
-		f.y += Math.sin(f.angle) * f.speed;
-		f.depth = 0.5 + 0.5 * Math.sin(t * 0.00022 + f.phase * 3);
+		f.turn += (dTurn / Math.max(dt, 1e-3) - f.turn) * Math.min(1, dt * 4);
+		f.speed += (target - f.speed) * Math.min(1, dt * (f.scared > 0.1 ? 4 : 0.8));
+		f.beat += dt * (2.4 + f.speed * 0.045);
+		f.x += Math.cos(f.angle) * f.speed * dt;
+		f.y += Math.sin(f.angle) * f.speed * dt;
+		f.depth = 0.5 + 0.5 * Math.sin(t * 0.13 + f.phase * 3);
 
-		const bodyLen = f.length;
-		const ds = bodyLen / (N - 1);
-		const k = Math.max(-1.1 / bodyLen, Math.min(1.1 / bodyLen, f.turn / Math.max(f.speed, 0.6)));
-		const swim = 0.55 + 0.45 * Math.min(f.speed / 3, 1);
+		// Spine: an arc set by the turn rate plus a travelling wave that grows toward the tail, so the
+		// head stays steady.
+		const L = f.length;
+		const ds = L / (N - 1);
+		const k = Math.max(-1.1 / L, Math.min(1.1 / L, f.turn / Math.max(f.speed, 20)));
+		const swim = 0.45 + 0.55 * Math.min(f.speed / 120, 1);
 		let dir = f.angle + Math.PI;
 		let cx = f.x;
 		let cy = f.y;
 		for (let i = 0; i < N; i++) {
 			const u = i / (N - 1);
-			const lateral = f.length * (0.006 + 0.045 * u * u) * swim * Math.sin(u * 5.3 - f.beat);
+			const lateral = L * (0.005 + 0.04 * u * u) * swim * Math.sin(u * 5.3 - f.beat);
 			f.spine[i] = { x: cx - Math.sin(dir) * lateral, y: cy + Math.cos(dir) * lateral };
 			cx += Math.cos(dir) * ds;
 			cy += Math.sin(dir) * ds;
@@ -143,11 +160,12 @@ export const STRIP_INDICES = (() => {
 	return new Uint16Array(idx);
 })();
 
+export const STRIP_FLOATS = N * 8;
+
 // The photo is laid along the spine: head at u=1 (right edge of the image), tail at u=0.
-export function buildStrip(f: Koi, aspect: number): Float32Array {
+export function buildStrip(f: Koi, aspect: number, out: Float32Array) {
 	const s = f.spine;
 	const half = (f.length * aspect) / 2;
-	const out = new Float32Array(N * 8);
 	for (let i = 0; i < N; i++) {
 		const a = s[Math.max(0, i - 1)];
 		const b = s[Math.min(N - 1, i + 1)];
@@ -155,10 +173,15 @@ export function buildStrip(f: Koi, aspect: number): Float32Array {
 		const nx = -(a.y - b.y) / d;
 		const ny = (a.x - b.x) / d;
 		const u = 1 - i / (N - 1);
-		out.set(
-			[s[i].x + nx * half, s[i].y + ny * half, u, 0, s[i].x - nx * half, s[i].y - ny * half, u, 1],
-			i * 8
-		);
+		const o = i * 8;
+		out[o] = s[i].x + nx * half;
+		out[o + 1] = s[i].y + ny * half;
+		out[o + 2] = u;
+		out[o + 3] = 0;
+		out[o + 4] = s[i].x - nx * half;
+		out[o + 5] = s[i].y - ny * half;
+		out[o + 6] = u;
+		out[o + 7] = 1;
 	}
 	return out;
 }

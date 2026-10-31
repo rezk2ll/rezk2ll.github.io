@@ -243,6 +243,19 @@
 						>My Claude Code setup</span
 					>
 				</a>
+				<a
+					href="https://projects.ferjani.dev/"
+					data-umami-event="open-projects"
+					data-umami-event-from="sidebar"
+					class="group col-span-2 rounded-lg border border-sky-500/20 bg-sky-500/5 px-3 py-2.5 transition-colors hover:border-sky-400/40 hover:bg-sky-500/10"
+				>
+					<span class="flex items-center gap-1 text-sm font-medium text-sky-300"
+						>Projects <span aria-hidden="true" class="text-sky-400/60">↗</span></span
+					>
+					<span class="mt-0.5 block text-xs text-zinc-500 group-hover:text-zinc-400"
+						>Side projects, libraries and experiments</span
+					>
+				</a>
 			</div>
 
 			<!-- Technologies -->
