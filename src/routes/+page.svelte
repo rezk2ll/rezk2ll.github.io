@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { siGithub, siGmail } from 'simple-icons';
 	import Seo from '$lib/Seo.svelte';
+	import { iconFill } from '$lib/techIcons';
 	import {
 		ai,
 		alsoContributed,
@@ -65,12 +66,6 @@
 			observer.disconnect();
 		};
 	});
-
-	// Brand colors too dark for the near-black background fall back to the text color.
-	function iconFill(hex: string) {
-		const [r, g, b] = [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16));
-		return 0.299 * r + 0.587 * g + 0.114 * b < 60 ? '#a1a1aa' : `#${hex}`;
-	}
 
 	function reveal(id: string) {
 		return visibleSections.includes(id) ? 'section-visible' : 'section-hidden';
