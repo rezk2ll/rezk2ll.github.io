@@ -82,28 +82,21 @@
 			node.style.setProperty('--rx', `${(0.5 - y) * 10}deg`);
 			node.style.setProperty('--ry', `${(x - 0.5) * 12}deg`);
 		}
-		function enter() {
-			const r = node.getBoundingClientRect();
-			sea?.splash(r.left + r.width / 2, r.top + r.height / 2, 40, 0.3);
-		}
 		function leave() {
 			node.style.setProperty('--rx', '0deg');
 			node.style.setProperty('--ry', '0deg');
 		}
 		node.addEventListener('pointermove', move);
-		node.addEventListener('pointerenter', enter);
 		node.addEventListener('pointerleave', leave);
 		return {
 			destroy() {
 				node.removeEventListener('pointermove', move);
-				node.removeEventListener('pointerenter', enter);
 				node.removeEventListener('pointerleave', leave);
 			}
 		};
 	}
 
-	// The tech logos float on the water: a spring pulls each one home, the pointer pushes them away,
-	// and a fast-moving logo leaves a wake.
+	// The tech logos float on the water: a spring pulls each one home and the pointer pushes them away.
 	onMount(() => {
 		theme = document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
 		sea?.setTheme(theme === 'light', true);
@@ -162,7 +155,6 @@
 
 		let raf = 0;
 		function step(t: number) {
-			const r = hero.getBoundingClientRect();
 			for (const b of bodies) {
 				b.vx += (b.hx * width - b.x) * 0.012;
 				b.vy += (b.hy * height - b.y) * 0.012;
@@ -178,10 +170,6 @@
 				b.vy *= 0.9;
 				b.x += b.vx;
 				b.y += b.vy;
-				const speed = Math.hypot(b.vx, b.vy);
-				if (speed > 1.5 && Math.random() < 0.35) {
-					sea?.splash(r.left + b.x, r.top + b.y, 8, Math.min(speed * 0.012, 0.1));
-				}
 			}
 			place(t);
 			raf = requestAnimationFrame(step);
