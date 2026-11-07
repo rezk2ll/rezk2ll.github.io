@@ -115,6 +115,13 @@ export type Project = {
 
 export const projects: Project[] = [
 	{
+		name: 'Vitre OS',
+		description:
+			'A 64-bit operating system in pure x86-64 assembly that rewrites itself while it runs: edit a kernel function in its own editor and it is patched in live, with rollback if it crashes. Desktop, sound, video, TCP/IP, TLS 1.3 and a web browser, and not one line of C.',
+		tech: ['Assembly', 'x86-64', 'NASM', 'QEMU'],
+		url: 'https://github.com/rezk2ll/vitre-os'
+	},
+	{
 		name: 'Dojo',
 		description:
 			'Short daily lessons for software engineers on architecture, DevOps, databases, security and more, in French and English. Works offline, and spaced repetition brings old topics back before you forget them.',
